@@ -31,6 +31,12 @@ window.addEventListener('load', function() {
   color: white;
 }
 
+.ButtonGroup {
+    margin: auto;
+    margin-bottom: 30px;
+    width: 90%;
+}
+
 .displayTxt {
     margin-top: 0px;
     margin-bottom: 10px;
@@ -50,27 +56,33 @@ window.addEventListener('load', function() {
 
 
 
-    function insertAfter(newNode, referenceNode) {
-        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    function insertAfter(newNode, referenceNode, parentNode) {
+        console.log(referenceNode);
+        if(referenceNode == null) {
+            parentNode.insertBefore(newNode, referenceNode);
+        }
+        else {
+            parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
 
     }
 
 
-    // button
+    // Button
 
-    var Button = function(name, target) {
+    function Button(name, target) {
         this.btn = document.createElement("button");
         this.btn.innerHTML = name;
         this.name = name;
         this.btn.className = "Button";
         console.log(target);
-        insertAfter(this.btn, target.lastChild);
+        insertAfter(this.btn, target.lastChild, target);
     };
 
 
-    // timeDisplay
+    // TimeDisplay
 
-    var TimeDisplay = function(item, target) {
+    function TimeDisplay(item, target) {
         this.name = item;
         this.txt = document.createElement("div");
         this.txt.className = "displayTxt";
@@ -83,7 +95,7 @@ window.addEventListener('load', function() {
         console.log(target.lastChild.parentNode);
         this.txt.insertBefore(this.timeTxt, this.txt.lastChild);
         this.txt.insertBefore(this.itemTxt, this.txt.lastChild);
-        insertAfter(this.txt, target.lastChild);
+        insertAfter(this.txt, target.lastChild, target);
     };
 
     TimeDisplay.prototype.logTime = function () {
@@ -99,19 +111,28 @@ window.addEventListener('load', function() {
     };
 
 
-    // managerObject
+    // Manager
 
-    var Manager = function(target) {
+    function Manager(target) {
+
         this.startDisplay = new TimeDisplay("start", target);
         this.thinkDisplay = new TimeDisplay("think", target);
         this.codeDisplay = new TimeDisplay("code", target);
         this.debugDisplay = new TimeDisplay("debug", target);
 
-        this.startButton = new Button("start", target);
-        this.thinkButton = new Button("think", target);
-        this.codeButton = new Button("code", target);
-        this.debugButton = new Button("debug", target);
-        this.clearButton = new Button("clear", target);
+        this.buttonGroup = document.createElement("div");
+        this.buttonGroup.className = "ButtonGroup";
+
+        console.log(this.buttonGroup);
+        insertAfter(this.buttonGroup, target, target.parentNode);
+
+        this.startButton = new Button("start", this.buttonGroup);
+        this.thinkButton = new Button("think", this.buttonGroup);
+        this.codeButton = new Button("code", this.buttonGroup);
+        this.debugButton = new Button("debug", this.buttonGroup);
+        this.clearButton = new Button("clear", this.buttonGroup);
+
+
 
         this.startButton.btn.addEventListener("click", this.startDisplay.logTime.bind(this.startDisplay));
         this.thinkButton.btn.addEventListener("click", this.thinkDisplay.logTime.bind(this.thinkDisplay));
@@ -125,12 +146,8 @@ window.addEventListener('load', function() {
 
     }
 
-
     var targetTag = document.getElementsByClassName("info-rows")[0];
     console.log(targetTag);
 
-
-
     var main = new Manager(targetTag);
-
 });
