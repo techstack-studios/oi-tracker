@@ -31,107 +31,106 @@ window.addEventListener('load', function() {
   color: white;
 }
 
-.Text {
+.displayTxt {
     margin-top: 0px;
     margin-bottom: 10px;
     display: block;
 }
+
+.Time {
+    float: right;
+}
 `;
 
-let s = document.createElement('style');
-s.type = "text/css";
-s.innerHTML = styleSheet;
-(document.head || document.documentElement).appendChild(s);
+    let s = document.createElement('style');
+    s.type = "text/css";
+    s.innerHTML = styleSheet;
+    (document.head || document.documentElement).appendChild(s);
 
 
 
 
-function insertAfter(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
+    function insertAfter(newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 
-function button(name) {
-    this.btn = document.createElement("button");
-    this.btn.innerHTML = name;
-    this.name = name;
-    this.btn.className = "Button";
-    insertAfter(this.btn, targetTag.lastChild);
-
-    this.btn.onclick = () => {
-        updateTimer(this.name);
-        console.log("test");
     }
-};
 
 
-function updateTimer(name) {
-    const d = new Date();
-    let text = d.toLocaleString();
-    if (name == "start") {
-        startTime.innerHTML = "start: " + text;
+    // button
+
+    var Button = function(name, target) {
+        this.btn = document.createElement("button");
+        this.btn.innerHTML = name;
+        this.name = name;
+        this.btn.className = "Button";
+        console.log(target);
+        insertAfter(this.btn, target.lastChild);
+    };
+
+
+    // timeDisplay
+
+    var TimeDisplay = function(item, target) {
+        this.name = item;
+        this.txt = document.createElement("div");
+        this.txt.className = "displayTxt";
+        this.itemTxt = document.createElement("text");
+        this.itemTxt.innerHTML = item + ": ";
+        this.itemTxt.className = "Item";
+        this.timeTxt = document.createElement("text");
+        this.timeTxt.className = "Time";
+        this.timeTxt.innerHTML = "N/A";
+        console.log(target.lastChild.parentNode);
+        this.txt.insertBefore(this.timeTxt, this.txt.lastChild);
+        this.txt.insertBefore(this.itemTxt, this.txt.lastChild);
+        insertAfter(this.txt, target.lastChild);
+    };
+
+    TimeDisplay.prototype.logTime = function () {
+        console.log(this);
+        const d = new Date();
+        let timeString = d.toLocaleString();
+        this.timeTxt.innerHTML = timeString;
+
+    };
+
+    TimeDisplay.prototype.clearTime = function () {
+        this.timeTxt.innerHTML = "N/A";
+    };
+
+
+    // managerObject
+
+    var Manager = function(target) {
+        this.startDisplay = new TimeDisplay("start", target);
+        this.thinkDisplay = new TimeDisplay("think", target);
+        this.codeDisplay = new TimeDisplay("code", target);
+        this.debugDisplay = new TimeDisplay("debug", target);
+
+        this.startButton = new Button("start", target);
+        this.thinkButton = new Button("think", target);
+        this.codeButton = new Button("code", target);
+        this.debugButton = new Button("debug", target);
+        this.clearButton = new Button("clear", target);
+
+        this.startButton.btn.addEventListener("click", this.startDisplay.logTime.bind(this.startDisplay));
+        this.thinkButton.btn.addEventListener("click", this.thinkDisplay.logTime.bind(this.thinkDisplay));
+        this.codeButton.btn.addEventListener("click", this.codeDisplay.logTime.bind(this.codeDisplay));
+        this.debugButton.btn.addEventListener("click", this.debugDisplay.logTime.bind(this.debugDisplay));
+
+        this.clearButton.btn.addEventListener("click", this.startDisplay.clearTime.bind(this.startDisplay));
+        this.clearButton.btn.addEventListener("click", this.thinkDisplay.clearTime.bind(this.thinkDisplay));
+        this.clearButton.btn.addEventListener("click", this.codeDisplay.clearTime.bind(this.codeDisplay));
+        this.clearButton.btn.addEventListener("click", this.debugDisplay.clearTime.bind(this.debugDisplay));
+
     }
-    if (name == "think") {
-        thinkTime.innerHTML = "thinking done: " + text;
-    }
-    if (name == "code") {
-        codeTime.innerHTML = "coding done: " + text;
-    }
-    if (name == "debug") {
-        debugTime.innerHTML = "debugging done: " + text;
-    }
-    if (name == "clear") {
-        startTime.innerHTML = "start: ";
-        thinkTime.innerHTML = "thinking done: ";
-        codeTime.innerHTML = "coding done: ";
-        debugTime.innerHTML = "debugging done: ";
-    }
-}
 
 
-var targetTag = document.getElementsByClassName("info-rows")[0];
-console.log(targetTag);
+    var targetTag = document.getElementsByClassName("info-rows")[0];
+    console.log(targetTag);
 
 
 
-
-var startTime = document.createElement("text");
-startTime.className = "Text";
-startTime.innerHTML = "start: ";
-
-var thinkTime = document.createElement("text");
-thinkTime.className = "Text";
-thinkTime.innerHTML = "thinking done: ";
-
-var codeTime = document.createElement("text");
-codeTime.className = "Text";
-codeTime.innerHTML = "coding done: ";
-
-var debugTime = document.createElement("text");
-debugTime.className = "Text";
-debugTime.innerHTML = "debugging done: ";
-
-
-insertAfter(startTime, targetTag.lastChild);
-
-insertAfter(thinkTime, targetTag.lastChild);
-
-insertAfter(codeTime, targetTag.lastChild);
-
-insertAfter(debugTime, targetTag.lastChild);
-
-let startButton = new button("start");
-let thinkButton = new button("think");
-let codeButton = new button("code");
-let debugButton = new button("debug");
-let clearButton = new button("clear");
-
-
-
-
-
-
-
-
-
+    var main = new Manager(targetTag);
 
 });
